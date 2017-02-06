@@ -1816,12 +1816,63 @@ static ClRcT exitContext( ClDebugCliT* pDebugObj)
     return rc;
 }
 
+ClCharT ** str_split(ClCharT* a_str, const char a_delim)
+{
+    ClCharT **result = 0;
+    ClCharT  *tmp = a_str; 
+    ClCharT  *last_delim = 0;
+    ClUint32T count = 0;
+    ClCharT  delim[2];
+
+    delim[0] = a_delim;
+    delim[1] = 0;
+
+    /* Count how many elements will be extracted. */
+    while (*tmp)
+    {
+        if (a_delim == *tmp)
+        {   
+            count++;
+            last_delim = tmp;
+        }
+        tmp++;
+    }
+
+    /* Add space for trailing token. */
+    count += last_delim < (a_str + strlen(a_str) - 1);
+
+    /* Add space for terminating null string so caller
+       knows where the list of returned strings ends. */
+    count++;
+    result = (ClCharT **) clHeapAllocate(sizeof(ClCharT*) * count);
+
+    if (result)
+    {
+        ClUint32T idx  = 0;
+        ClCharT* token = strtok(a_str, delim);
+
+        while (token)
+        {   
+            assert(idx < count);
+            *(result + idx) = strdup(token);
+            idx++;
+            token = strtok(0, delim);
+        }
+        assert(idx == count - 1);
+        *(result + idx) = 0;
+    }
+
+    return result;
+}
+
 
 static ClRcT enterContext( ClDebugCliT* pDebugObj, ClCharT* name )
 {
     ClRcT                   rc = CL_OK;
     SaNameT                 nameStr;
     ClIocAddressT           iocAddress;
+    ClUint32T               i = 0;
+
 
     if (pDebugObj->context.isNodeAddressValid)
     {
@@ -1829,8 +1880,34 @@ static ClRcT enterContext( ClDebugCliT* pDebugObj, ClCharT* name )
         {
             if (strcmp(name, "cpm"))
             {
-                strcpy ((ClCharT *)nameStr.value, name);
-                nameStr.length = strlen(name);
+
+                ClCharT *retStr = NULL;
+                ClCharT **tokens = NULL;
+                ClUint32T    len = 0;
+
+		rc = clCpmComponentListDebugAll( pDebugObj->context.nodeAddress, &retStr);
+
+               if ((CL_OK == rc) && (NULL != retStr))
+                {
+                        tokens = str_split(retStr, '\n');
+                        len = strlen(name);
+                        for(i=0; *(tokens + i); i++)
+                        {
+                            if(!strncasecmp(*(tokens+i), name, len))
+                            {
+                                strcpy ((ClCharT *)nameStr.value, *(tokens+i));
+                                nameStr.length = strlen(*(tokens+i));
+                            }
+                            free(*(tokens+i));
+                        }
+                        clHeapFree(tokens);
+                        clHeapFree(retStr);
+                }
+                else
+                {
+                        printf("Failed to get component list, error [%#x]", rc);
+                }
+
                 if(nameStr.length == 0)
                 {
                     printf("\r\nComponent name is missing\n"
@@ -1946,7 +2023,7 @@ static ClRcT debugList(ClDebugCliT* pDebugObj)
     if (!pDebugObj->context.isNodeAddressValid)
     {
         memset(&nodeName, '\0', SA_MAX_NAME_LENGTH);
-		debugCpmSlotInfo(&nodeName);
+	debugCpmSlotInfo(&nodeName);
     }
     else
     {
