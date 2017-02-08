@@ -720,8 +720,10 @@ def stop_amf():
         log.debug('SAFplus is running with pid: %d' % amf_pid)
         log.info('Waiting for SAFplus AMF to shutdown...')
         wait_for_safplus_shutdown()
-        amf_pid = get_amf_pid()
-        if amf_pid: kill_amf()
+        #amf_pid = get_amf_pid()
+        #if amf_pid: kill_amf()
+        #kill all process onme more time to make sure all processes are stopped
+        kill_amf()
         run_custom_scripts('stop')
 
 
