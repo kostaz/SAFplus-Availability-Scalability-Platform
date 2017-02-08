@@ -473,15 +473,14 @@ static ClRcT debugCliFinalize(ClDebugCliT** ppDebugObj)
     return CL_OK;
 }
 
-
-static ClRcT  debugCpmSlotInfo(saUint8T *nodeName)
+static ClRcT  debugCpmSlotInfo1()
 {
-    ClRcT     rc = CL_OK;
-    ClRcT     retCode = CL_OK;
-    ClUint32T i = 0;
-    ClCpmSlotInfoT cpmSlotInfo = {0};
-	ClUint32T          numNeighbors = 0;
-    ClIocNodeAddressT* pNeighborList = NULL;
+    ClRcT     			rc = CL_OK;
+    ClRcT     			retCode = CL_OK;
+    ClUint32T 			i = 0;
+    ClCpmSlotInfoT 		cpmSlotInfo = {0};
+	ClUint32T          	numNeighbors = 0;
+    ClIocNodeAddressT* 	pNeighborList = NULL;
     ClStatusT           status;
 
     memset(&status,0,sizeof(ClStatusT));
@@ -522,11 +521,6 @@ static ClRcT  debugCpmSlotInfo(saUint8T *nodeName)
             	{
                 	printf("\t%.*s", cpmSlotInfo.nodeName.length,
                     	                cpmSlotInfo.nodeName.value);
-
-                	if(nodeName)
-                    	memcpy(nodeName,
-                             &(cpmSlotInfo.nodeName.value[0]),
-                                cpmSlotInfo.nodeName.length);
             	}
             	else if(CL_ERR_DOESNT_EXIST == CL_GET_ERROR_CODE(retCode))
             	{
@@ -547,6 +541,91 @@ static ClRcT  debugCpmSlotInfo(saUint8T *nodeName)
 
 }
 
+static ClRcT  debugCpmSlotInfo2(ClCharT **nodeName, ClUint32T *slot)
+{
+    ClRcT     			rc = CL_OK;
+    ClRcT     			retCode = CL_OK;
+    ClUint32T 			i = 0;
+    ClCpmSlotInfoT 		cpmSlotInfo = {0};
+	ClUint32T          	numNeighbors = 0;
+    ClIocNodeAddressT* 	pNeighborList = NULL;
+    ClStatusT           status;
+
+    memset(&status,0,sizeof(ClStatusT));
+    rc = clIocTotalNeighborEntryGet(&numNeighbors);
+    pNeighborList = (ClIocNodeAddressT*) clHeapAllocate(numNeighbors * sizeof(ClIocNodeAddressT));
+    if (NULL == pNeighborList)
+    {
+    	return CL_DEBUG_RC(CL_ERR_NO_MEMORY);
+    }
+    rc = clIocNeighborListGet(&numNeighbors,pNeighborList );
+    if (CL_OK != rc)
+    {
+    	clHeapFree(pNeighborList);
+        return rc;
+    }
+
+    if(0 == numNeighbors)
+    {
+    	printf("\r\nNone\tNone");
+    }
+    else
+    {
+
+    	for (i = 0; i < numNeighbors; i++)
+    	{
+        	clCpmNodeStatusGet(pNeighborList[i],&status);
+        	if(status == CL_STATUS_UP)
+        	{
+            	memset(&cpmSlotInfo, '\0', sizeof(ClCpmSlotInfoT));
+            	cpmSlotInfo.slotId = pNeighborList[i];
+
+
+            	retCode = clCpmSlotGet(CL_CPM_SLOT_ID, &cpmSlotInfo);
+
+            	if(CL_OK == retCode)
+            	{
+					nodeName[i] = (ClCharT *) clHeapAllocate(cpmSlotInfo.nodeName.length + 1);
+                	if(nodeName[i])
+                    	memcpy(nodeName[i],
+                             &(cpmSlotInfo.nodeName.value[0]),
+                                cpmSlotInfo.nodeName.length);
+					*(nodeName[i] + cpmSlotInfo.nodeName.length) = '\0';
+					slot[i] = cpmSlotInfo.slotId;
+
+            	}
+            	else if(CL_ERR_DOESNT_EXIST == CL_GET_ERROR_CODE(retCode))
+            	{
+                	printf("\tNot Avail");
+            	}
+            	else
+            	{
+                	printf("\tError : clCpmSlotGet() failed. rc[0x%x] ", rc);
+            	}
+        	}
+		}
+	}
+  	printf("\r\n");
+    clHeapFree(pNeighborList);
+
+
+    return rc;
+
+}
+
+static ClRcT  freeCpmSlotInfo(ClCharT **nodeName)
+{
+    ClRcT     			rc = CL_OK;
+    ClUint32T 			i = 0;
+
+	while(nodeName[i])
+	{
+		clHeapFree(nodeName[i]);
+		i++;
+	}
+
+	return rc;
+}
 /*************************************************************************
  * This function sets the termial to raw and no echo mode.
  *
@@ -1947,18 +2026,19 @@ static ClRcT enterContext( ClDebugCliT* pDebugObj, ClCharT* name )
     }
     else
     {
-        ClIocNodeAddressT nodeAddress=0;
-        ClUint32T          slotId=0;
-        ClCharT*          temp = name;
-        ClCharT**         pName;
-        ClStatusT nodeStatus = CL_STATUS_DOWN;
-    	saUint8T            nodeName[SA_MAX_NAME_LENGTH] = {0};
+        ClIocNodeAddressT 	nodeAddress=0;
+        ClUint32T          	slotId=0;
+        ClCharT*          	temp = name;
+        ClCharT**         	pName;
+        ClStatusT 			nodeStatus = CL_STATUS_DOWN;
+    	ClCharT           	*nodeName[SA_MAX_NAME_LENGTH] = {0};
+        ClUint32T          	i=0;
+        ClUint32T			nodeNameSlot[SA_MAX_NAME_LENGTH] = {0}; 
 
         pName = &temp;
         memset(&nodeName, '\0', SA_MAX_NAME_LENGTH);
 
-  		debugCpmSlotInfo(&nodeName);
-        if((!strncasecmp(name,"master",6)) || (!strcasecmp(name,nodeName)))
+        if(!strncasecmp(name,"master",6))
         {
             if( (rc = clCpmMasterAddressGet((ClIocNodeAddressT*)&slotId))
                 != CL_OK)
@@ -1969,6 +2049,23 @@ static ClRcT enterContext( ClDebugCliT* pDebugObj, ClCharT* name )
             }
             goto get_address;
         }
+		else if(!isdigit(name[0]))
+		{
+  			debugCpmSlotInfo2(&nodeName[0], nodeNameSlot);
+			while(nodeName[i])
+			{
+        		if(!strcasecmp(name, nodeName[i]))
+				{
+        			slotId = nodeNameSlot[i];
+					freeCpmSlotInfo(nodeName);
+					goto get_address;
+				}
+
+				i++;
+			}
+			freeCpmSlotInfo(nodeName);
+		}
+
         slotId = (ClUint32T)strtol(name, pName, 10);
         if((ClInt32T)slotId <= 0)
         {
@@ -2017,13 +2114,13 @@ static ClRcT enterContext( ClDebugCliT* pDebugObj, ClCharT* name )
 static ClRcT debugList(ClDebugCliT* pDebugObj)
 {
     ClRcT     rc = CL_OK;
-    saUint8T            nodeName[SA_MAX_NAME_LENGTH] = {0};
+    ClCharT   *nodeName[SA_MAX_NAME_LENGTH] = {0};
 
     /*this is only valid in generic context so check for that*/
     if (!pDebugObj->context.isNodeAddressValid)
     {
         memset(&nodeName, '\0', SA_MAX_NAME_LENGTH);
-	debugCpmSlotInfo(&nodeName);
+		debugCpmSlotInfo1();
     }
     else
     {
