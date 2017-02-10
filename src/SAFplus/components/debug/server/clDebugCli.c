@@ -479,9 +479,9 @@ static ClRcT  debugCpmSlotInfo1()
     ClRcT     			retCode = CL_OK;
     ClUint32T 			i = 0;
     ClCpmSlotInfoT 		cpmSlotInfo = {0};
-	ClUint32T          	numNeighbors = 0;
-    ClIocNodeAddressT* 	pNeighborList = NULL;
-    ClStatusT           status;
+    ClUint32T          	        numNeighbors = 0;
+    ClIocNodeAddressT* 	        pNeighborList = NULL;
+    ClStatusT                   status;
 
     memset(&status,0,sizeof(ClStatusT));
     rc = clIocTotalNeighborEntryGet(&numNeighbors);
@@ -505,40 +505,38 @@ static ClRcT  debugCpmSlotInfo1()
     else
     {
 
-    	for (i = 0; i < numNeighbors; i++)
+        for (i = 0; i < numNeighbors; i++)
     	{
-        	clCpmNodeStatusGet(pNeighborList[i],&status);
-        	if(status == CL_STATUS_UP)
-        	{
-            	memset(&cpmSlotInfo, '\0', sizeof(ClCpmSlotInfoT));
-            	cpmSlotInfo.slotId = pNeighborList[i];
+       	    clCpmNodeStatusGet(pNeighborList[i],&status);
+       	    if(status == CL_STATUS_UP)
+       	    {
+                memset(&cpmSlotInfo, '\0', sizeof(ClCpmSlotInfoT));
+                cpmSlotInfo.slotId = pNeighborList[i];
 
-            	printf("\r\n%d",pNeighborList[i]);
+                printf("\r\n%d",pNeighborList[i]);
 
-            	retCode = clCpmSlotGet(CL_CPM_SLOT_ID, &cpmSlotInfo);
+                retCode = clCpmSlotGet(CL_CPM_SLOT_ID, &cpmSlotInfo);
 
-            	if(CL_OK == retCode)
-            	{
-                	printf("\t%.*s", cpmSlotInfo.nodeName.length,
-                    	                cpmSlotInfo.nodeName.value);
-            	}
-            	else if(CL_ERR_DOESNT_EXIST == CL_GET_ERROR_CODE(retCode))
-            	{
-                	printf("\tNot Avail");
-            	}
-            	else
-            	{
-                	printf("\tError : clCpmSlotGet() failed. rc[0x%x] ", rc);
-            	}
-        	}
-		}
+                if(CL_OK == retCode)
+                {
+                    printf("\t%.*s", cpmSlotInfo.nodeName.length,
+               	                     cpmSlotInfo.nodeName.value);
+                }
+                else if(CL_ERR_DOESNT_EXIST == CL_GET_ERROR_CODE(retCode))
+                {
+                    printf("\tNot Avail");
+                }
+                else
+                {
+                    printf("\tError : clCpmSlotGet() failed. rc[0x%x] ", rc);
+                }
+            }
 	}
-  	printf("\r\n");
+    }
+    printf("\r\n");
     clHeapFree(pNeighborList);
 
-
     return rc;
-
 }
 
 static ClRcT  debugCpmSlotInfo2(ClCharT **nodeName, ClUint32T *slot)
@@ -547,9 +545,9 @@ static ClRcT  debugCpmSlotInfo2(ClCharT **nodeName, ClUint32T *slot)
     ClRcT     			retCode = CL_OK;
     ClUint32T 			i = 0;
     ClCpmSlotInfoT 		cpmSlotInfo = {0};
-	ClUint32T          	numNeighbors = 0;
-    ClIocNodeAddressT* 	pNeighborList = NULL;
-    ClStatusT           status;
+    ClUint32T          	        numNeighbors = 0;
+    ClIocNodeAddressT* 	        pNeighborList = NULL;
+    ClStatusT                   status;
 
     memset(&status,0,sizeof(ClStatusT));
     rc = clIocTotalNeighborEntryGet(&numNeighbors);
@@ -574,43 +572,41 @@ static ClRcT  debugCpmSlotInfo2(ClCharT **nodeName, ClUint32T *slot)
 
     	for (i = 0; i < numNeighbors; i++)
     	{
-        	clCpmNodeStatusGet(pNeighborList[i],&status);
-        	if(status == CL_STATUS_UP)
-        	{
-            	memset(&cpmSlotInfo, '\0', sizeof(ClCpmSlotInfoT));
-            	cpmSlotInfo.slotId = pNeighborList[i];
+            clCpmNodeStatusGet(pNeighborList[i],&status);
+            if(status == CL_STATUS_UP)
+            {
+                memset(&cpmSlotInfo, '\0', sizeof(ClCpmSlotInfoT));
+                cpmSlotInfo.slotId = pNeighborList[i];
 
+                retCode = clCpmSlotGet(CL_CPM_SLOT_ID, &cpmSlotInfo);
 
-            	retCode = clCpmSlotGet(CL_CPM_SLOT_ID, &cpmSlotInfo);
-
-            	if(CL_OK == retCode)
-            	{
-					nodeName[i] = (ClCharT *) clHeapAllocate(cpmSlotInfo.nodeName.length + 1);
-                	if(nodeName[i])
-                    	memcpy(nodeName[i],
+                if(CL_OK == retCode)
+                {
+		    nodeName[i] = (ClCharT *) clHeapAllocate(cpmSlotInfo.nodeName.length + 1);
+                    if(nodeName[i])
+                        memcpy(nodeName[i],
                              &(cpmSlotInfo.nodeName.value[0]),
                                 cpmSlotInfo.nodeName.length);
-					*(nodeName[i] + cpmSlotInfo.nodeName.length) = '\0';
-					slot[i] = cpmSlotInfo.slotId;
+
+	            *(nodeName[i] + cpmSlotInfo.nodeName.length) = '\0';
+		    slot[i] = cpmSlotInfo.slotId;
 
             	}
             	else if(CL_ERR_DOESNT_EXIST == CL_GET_ERROR_CODE(retCode))
             	{
-                	printf("\tNot Avail");
+                    printf("\tNot Avail");
             	}
             	else
             	{
-                	printf("\tError : clCpmSlotGet() failed. rc[0x%x] ", rc);
+                    printf("\tError : clCpmSlotGet() failed. rc[0x%x] ", rc);
             	}
-        	}
-		}
+            }
 	}
-  	printf("\r\n");
+    }
+    printf("\r\n");
     clHeapFree(pNeighborList);
 
-
     return rc;
-
 }
 
 static ClRcT  freeCpmSlotInfo(ClCharT **nodeName)
@@ -618,13 +614,13 @@ static ClRcT  freeCpmSlotInfo(ClCharT **nodeName)
     ClRcT     			rc = CL_OK;
     ClUint32T 			i = 0;
 
-	while(nodeName[i])
-	{
-		clHeapFree(nodeName[i]);
-		i++;
-	}
+    while(nodeName[i])
+    {
+        clHeapFree(nodeName[i]);
+        i++;
+    }
 
-	return rc;
+    return rc;
 }
 /*************************************************************************
  * This function sets the termial to raw and no echo mode.
@@ -2030,13 +2026,14 @@ static ClRcT enterContext( ClDebugCliT* pDebugObj, ClCharT* name )
         ClUint32T          	slotId=0;
         ClCharT*          	temp = name;
         ClCharT**         	pName;
-        ClStatusT 			nodeStatus = CL_STATUS_DOWN;
-    	ClCharT           	*nodeName[SA_MAX_NAME_LENGTH] = {0};
+        ClStatusT 		nodeStatus = CL_STATUS_DOWN;
+    	ClCharT           	*nodeName[CL_IOC_MAX_NODES] = {0};
         ClUint32T          	i=0;
-        ClUint32T			nodeNameSlot[SA_MAX_NAME_LENGTH] = {0}; 
+        ClUint8T          	match=0;
+        ClUint32T		nodeNameSlot[CL_IOC_MAX_NODES] = {0}; 
 
         pName = &temp;
-        memset(&nodeName, '\0', SA_MAX_NAME_LENGTH);
+        memset(&nodeName, '\0', CL_IOC_MAX_NODES);
 
         if(!strncasecmp(name,"master",6))
         {
@@ -2047,40 +2044,42 @@ static ClRcT enterContext( ClDebugCliT* pDebugObj, ClCharT* name )
                        rc);
                 return rc;
             }
-            goto get_address;
         }
-		else if(!isdigit(name[0]))
-		{
-  			debugCpmSlotInfo2(&nodeName[0], nodeNameSlot);
-			while(nodeName[i])
-			{
-        		if(!strcasecmp(name, nodeName[i]))
-				{
-        			slotId = nodeNameSlot[i];
-					freeCpmSlotInfo(nodeName);
-					goto get_address;
-				}
+        else
+	{
+            slotId = (ClUint32T)strtol(name, pName, 10);
+            if(!**pName)
+            {
+                if((ClInt32T)slotId <= 0)
+                {
+                    printf("\r\nInvalid slot number\n"
+                           "\rType 'list' to see valid slots\n");
+                    return CL_DEBUG_RC(CL_DBG_ERR_INVALID_PARAM);       
+                }
+            } else
+            {
+  	        debugCpmSlotInfo2(&nodeName[0], nodeNameSlot);
+	        while(nodeName[i])
+	        {
+       	            if(!strcasecmp(name, nodeName[i]))
+	            {
+       	                slotId = nodeNameSlot[i];
+                        match = 1;
+                        break;
+	            }
 
-				i++;
-			}
-			freeCpmSlotInfo(nodeName);
-		}
-
-        slotId = (ClUint32T)strtol(name, pName, 10);
-        if((ClInt32T)slotId <= 0)
-        {
-            printf("\r\nInvalid slot number\n"
-                   "\rType 'list' to see valid slots\n");
-            return CL_DEBUG_RC(CL_DBG_ERR_INVALID_PARAM);       
+	            i++;
+	        }
+	        freeCpmSlotInfo(nodeName);
+                if(!match)
+                {
+                    printf("\r\nThe argument should be an integer slot number " \
+                           "or \"master\" or \"Node Name\" " \
+                           "\rUsage:setc <slot number> | master | <Node Name>\n");
+                    return CL_DEBUG_RC(CL_DBG_ERR_INVALID_PARAM);
+                }
+	    }
         }
-        if (temp == name)
-        {
-            printf("\r\nThe argument should be an integer slot number " \
-                   "or \"master\"\rUsage:setc <slot number> | master\n");
-            return CL_DEBUG_RC(CL_DBG_ERR_INVALID_PARAM);
-        }
-
-        get_address:
 
         CL_CPM_IOC_ADDRESS_GET(0, slotId, nodeAddress);
         rc = clCpmNodeStatusGet(nodeAddress,&nodeStatus);
