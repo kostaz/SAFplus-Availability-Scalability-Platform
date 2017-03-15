@@ -31,8 +31,17 @@ import errno
 # RemovePersistentDb = False
 tipc_settings=None
  
+def get_sandbox_dir(s):
+    idx = s.find('/etc/safplus_watchdog.py')
+    if idx>=0:
+       return s[0:idx]
+    return s
+
 def get_watchdog_pid():
-    p = '%s/safplus_watchdog.py' % safplus.SAFPLUS_ETC_DIR
+    #p = '%s/safplus_watchdog.py' % safplus.SAFPLUS_ETC_DIR
+
+    p = 'safplus_watchdog.py'
+
     cmd = safplus.get_pid_cmd(p)
     result = safplus.Popen(cmd)
 
@@ -40,15 +49,22 @@ def get_watchdog_pid():
     psLine = filter(lambda x: not "grep" in x, result)
 
     if len(psLine) == 0: # Its already dead
-      return 0
+      return (0,"")
     try:
-      wpid = int(psLine[0].split()[0])
+      #wpid = int(psLine[0].split()[0])
+      if not safplus.is_simulation() and len(psLine)>0:
+         return (int(psLine[0].split()[0]), get_sandbox_dir(psLine[0].split()[2]))
+      elif safplus.is_simulation():
+         for line in psLine:
+            if safplus.SAFPLUS_ETC_DIR in line.split()[2]:
+               return (int(line.split()[0]), get_sandbox_dir(line.split()[2]))
+         return (0,"")
     except Exception, e:
       print "Exception: %s" % str(e)
       print "CMD: %s" % cmd
       print "data: %s" % result
       raise
-    return wpid
+    #return wpid
 
 def get_watchdog_pid_cmd(p):
     return 'ps -e -o pid,cmd | grep \'%s\'' % p
@@ -99,7 +115,7 @@ def set_ld_library_paths():
 def start_watchdog():
     global tipc_settings
     # check whether watchdog exist 
-    watchdog_pid = get_watchdog_pid()
+    watchdog_pid,sandbox = get_watchdog_pid()
     if not watchdog_pid:
         if safplus_tipc.has_tipc_plugin() and (safplus_tipc.ignore_tipc_settings() == False):
           if safplus_tipc.enforce_tipc_settings() == True:
@@ -114,7 +130,8 @@ def start_watchdog():
         cmd = 'setsid %s/safplus_watchdog.py &' % safplus.SAFPLUS_ETC_DIR
         os.system(cmd)
     else:
-        safplus.fail_and_exit('SAFplus is already running on node [%s], pid [%s]' % (safplus.get_safplus_node_addr(), watchdog_pid))
+        #safplus.fail_and_exit('SAFplus is already running on node [%s], pid [%s]' % (safplus.get_safplus_node_addr(), watchdog_pid))
+        safplus.fail_and_exit('SAFplus is already running from sandbox [%s]' % sandbox)
 
 def stop_watchdog():
     kill_watchdog() #Don't let safplus_watchdog monitor and spawn safplus_amf as in race condition

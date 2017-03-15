@@ -192,11 +192,15 @@ ClRcT clTipcDoesNodeAlreadyExist(void)
         /* Check whether another TIPC node with same tipc address <z.c.n>,
          * as of this node exists 
          */
+    /* To enable simulation mode, we don't check if address was installed for this node
+    because in this mode, no tipc address is added to this node  */
+#if 0
         tipcAddress = clTipcOwnAddrGet();
         if (tipcAddress == 0) // TIPC not installed or no address assigned
         {
             return CL_IOC_RC(CL_ERR_NO_RESOURCE);
         }
+#endif
         
         rc = clTipcIsAddressInUse(CL_TIPC_SET_TYPE(CL_IOC_XPORT_PORT), tipcAddress);
         if(rc != CL_OK) return rc;

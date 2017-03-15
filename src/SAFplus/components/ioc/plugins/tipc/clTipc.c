@@ -773,7 +773,10 @@ ClRcT xportInit(const ClCharT *xportType, ClInt32T xportId, ClBoolT nodeRep)
 
      /* 
      * Check if we have a TIPC address (tipc is installed and configured) 
-     */   
+     */
+    /* To enable simulation mode, we don't check if address was installed for this node
+    because in this mode, no tipc address is added to this node  */
+#if 0
     {
         ClUint32T tipcAddress = clTipcOwnAddrGet();
         if (tipcAddress == 0) // TIPC not installed or no address assigned
@@ -782,7 +785,8 @@ ClRcT xportInit(const ClCharT *xportType, ClInt32T xportId, ClBoolT nodeRep)
             rc = CL_IOC_RC(CL_ERR_NO_RESOURCE);
             goto out;
         }        
-    }   
+    }
+#endif
     /* 
      * Check if the tipc address or asp address is in use
      */
