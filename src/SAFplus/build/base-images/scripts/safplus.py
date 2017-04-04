@@ -673,23 +673,24 @@ def get_openhpid_pid():
 
     return 0
 
-def get_pid_for_this_sandbox(pid):
-    proc_file = '/proc/%s/cwd' % pid
-    try:
-        cwd = os.readlink(proc_file)
-    except OSError, e:
-        log.debug('Failed to read [%s] : %s' %\
-                      (proc_file, e))
-        cwd = ''
+# this function works failed when running safplus from an other dir than the safplus sandbox itself
+#def get_pid_for_this_sandbox(pid):
+#    proc_file = '/proc/%s/cwd' % pid
+#    try:
+#        cwd = os.readlink(proc_file)
+#    except OSError, e:
+#        log.debug('Failed to read [%s] : %s' %\
+#                      (proc_file, e))
+#        cwd = ''
 
-    if cwd.endswith(' (deleted)'):
-        log.critical('Contents of this sandbox directory were deleted '
-                     'without stopping SAFplus which was started '
-                     'from it.')
-        fail_and_exit('Please kill all the SAFplus processes manually '
-                          'before proceeding any further.')
+#    if cwd.endswith(' (deleted)'):
+#        log.critical('Contents of this sandbox directory were deleted '
+#                     'without stopping SAFplus which was started '
+#                     'from it.')
+#        fail_and_exit('Please kill all the SAFplus processes manually '
+#                          'before proceeding any further.')
 
-    return (cwd == sandbox_dir)
+#    return (cwd == sandbox_dir)
 
 def get_amf_pid():
     while True:
@@ -703,13 +704,24 @@ def get_amf_pid():
 
         valid = commands.getstatusoutput("%s %s" % (cmd,AmfName))
         if valid[0] == 0:
-            l = valid[1].split()
-            if is_simulation():
-                l = filter(get_pid_for_this_sandbox, l)
-            if len(l) == 1 :
-                return int(l[0])
-            if len(l) == 0 :
-                return 0
+            if len(valid[1].split())==1 and not is_simulation():
+                #log.info("AMF PID is %d" % int(valid[1]))
+                return int(valid[1])
+            elif len(valid[1].split())>0 and is_simulation():
+                output = commands.getstatusoutput("ps -eo pid,cmd|grep %s|grep -v grep" % AmfName)
+                for amfPid in valid[1].split():
+                    for firstAmfInfo in output[1].split('\n'):
+                        if amfPid in firstAmfInfo and sandbox_dir in firstAmfInfo:
+                            return int(amfPid)
+            return 0
+            #l = valid[1].split()
+            #if is_simulation():
+            #    l = filter(get_pid_for_this_sandbox, l)
+            #if len(l) == 1 :
+            #    return int(l[0])
+            #if len(l) == 0 :
+            #    return 0
+
         else:
             break
         log.warning('there are more than one AMF pid. Try again...')
