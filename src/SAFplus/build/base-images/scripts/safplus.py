@@ -693,6 +693,7 @@ def get_openhpid_pid():
 #    return (cwd == sandbox_dir)
 
 def get_amf_pid():
+    import safplus_watchdog_start
     while True:
         if os.path.exists('/bin/pidof'):  # ubuntu
           cmd = '/bin/pidof'
@@ -711,7 +712,8 @@ def get_amf_pid():
                 output = commands.getstatusoutput("ps -eo pid,cmd|grep %s|grep -v grep" % AmfName)
                 for amfPid in valid[1].split():
                     for firstAmfInfo in output[1].split('\n'):
-                        if amfPid in firstAmfInfo and sandbox_dir in firstAmfInfo:
+                        sandbox = safplus_watchdog_start.get_sandbox_dir(firstAmfInfo.split()[1], '/bin/%s' % AmfName)
+                        if amfPid in firstAmfInfo and sandbox_dir == sandbox:
                             return int(amfPid)
             return 0
             #l = valid[1].split()

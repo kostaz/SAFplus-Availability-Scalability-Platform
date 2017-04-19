@@ -131,7 +131,12 @@ instantiate() {
     ( cd ${TEMPLATE} ; find . \( -type f -o -type l \) -print ) |
     while read LINE
     do
-        ln ${TEMPLATE}/${LINE} ${INSTANCE}/`dirname ${LINE}` 2>/dev/null
+        if [[ ${LINE} == *"/bin/"* ]]
+        then
+            cp -f ${TEMPLATE}/${LINE} ${INSTANCE}/`dirname ${LINE}` 2>/dev/null
+        else
+            ln -f ${TEMPLATE}/${LINE} ${INSTANCE}/`dirname ${LINE}` 2>/dev/null
+        fi
     done
 
     if [ ${MULTIPLICITY} == "yes" ]

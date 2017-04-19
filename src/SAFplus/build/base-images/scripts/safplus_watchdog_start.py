@@ -31,8 +31,8 @@ import errno
 # RemovePersistentDb = False
 tipc_settings=None
  
-def get_sandbox_dir(s):
-    idx = s.find('/etc/safplus_watchdog.py')
+def get_sandbox_dir(s, stringToFind):
+    idx = s.find(stringToFind)
     if idx>=0:
        return s[0:idx]
     return s
@@ -53,11 +53,11 @@ def get_watchdog_pid():
     try:
       #wpid = int(psLine[0].split()[0])
       if not safplus.is_simulation() and len(psLine)>0:
-         return (int(psLine[0].split()[0]), get_sandbox_dir(psLine[0].split()[2]))
+         return (int(psLine[0].split()[0]), get_sandbox_dir(psLine[0].split()[2],'/etc/safplus_watchdog.py'))
       elif safplus.is_simulation():
          for line in psLine:
             if safplus.SAFPLUS_ETC_DIR in line.split()[2]:
-               return (int(line.split()[0]), get_sandbox_dir(line.split()[2]))
+               return (int(line.split()[0]), get_sandbox_dir(line.split()[2],'/etc/safplus_watchdog.py'))
          return (0,"")
     except Exception, e:
       print "Exception: %s" % str(e)
