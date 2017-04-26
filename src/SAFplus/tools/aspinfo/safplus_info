@@ -661,15 +661,23 @@ def get_status_info():
         asp_run_env = load_asp_run_env()
         d.nodeaddr = asp_run_env['ASP_NODEADDR']
         d.nodename = asp_run_env['ASP_NODENAME']
-        amf_cmd_line = '%s/bin/safplus_amf' % (_asp_dir)
-        cmd = sys_asp['grep_amf_cmd'](amf_cmd_line)
-        (ec, output, signal, core) = system(cmd)
-        if ec:
+        # Don't need to get the amf pid from the command line because we have gotten it via etc/init.d/safplus status
+        #amf_cmd_line = '%s/bin/safplus_amf' % (_asp_dir)
+        #cmd = sys_asp['grep_amf_cmd'](amf_cmd_line)
+        #(ec, output, signal, core) = system(cmd)
+        #if ec:
+        #    raise CommandError('SAFplus is reported running, but could not retrieve PID')
+        l = res.split()
+        pidMark = l[len(l)-1]
+        try:
+            amfPid = pidMark[1:len(pidMark)-1]
+            int(amfPid)
+            d.pid = amfPid
+        except:
             raise CommandError('SAFplus is reported running, but could not retrieve PID')
-        d.pid = output[0].split()[0].strip()
-        # Sanity check: if 'up', same pid should have been in res message
-        if d.status == 'up' and res.find(d.pid) == -1:
-            raise UnknownError('PID mismatch beetween asp status and pgrep')
+        #Sanity check: if 'up', same pid should have been in res message
+        #if d.status == 'up' and res.find(d.pid) == -1:
+        #    raise UnknownError('PID mismatch beetween asp status and pgrep')
     
     return d
 
@@ -2084,7 +2092,7 @@ def system(cmd):
     output = []
     while True:
         pid, sts = os.waitpid(child.pid, os.WNOHANG)
-        output += child.stdout.readlines() 
+        output += child.stdout.readlines()
         if pid == child.pid:
             break
         else:
