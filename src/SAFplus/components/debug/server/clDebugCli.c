@@ -2033,7 +2033,7 @@ static ClRcT enterContext( ClDebugCliT* pDebugObj, ClCharT* name )
         ClUint32T		nodeNameSlot[CL_IOC_MAX_NODES] = {0}; 
 
         pName = &temp;
-        memset(&nodeName, '\0', CL_IOC_MAX_NODES);
+        memset(&nodeName, '\0', CL_IOC_MAX_NODES * sizeof(nodeName[0]));
 
         if(!strncasecmp(name,"master",6))
         {
@@ -2118,7 +2118,7 @@ static ClRcT debugList(ClDebugCliT* pDebugObj)
     /*this is only valid in generic context so check for that*/
     if (!pDebugObj->context.isNodeAddressValid)
     {
-        memset(&nodeName, '\0', SA_MAX_NAME_LENGTH);
+        memset(&nodeName, '\0', SA_MAX_NAME_LENGTH * sizeof(nodeName[0]));
 		debugCpmSlotInfo1();
     }
     else

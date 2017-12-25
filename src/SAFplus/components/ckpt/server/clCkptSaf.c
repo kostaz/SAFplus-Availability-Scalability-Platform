@@ -830,7 +830,10 @@ clCkptSectionChkNAdd(ClCkptHdlT  ckptHdl,
                pCkpt->ckptName.value);
     return CL_OK;
 dataFreeNExit:
-    if( NULL != pSec->pData ) clHeapFree(pSec->pData); pSec->pData = NULL;
+    if( NULL != pSec->pData ) {
+        clHeapFree(pSec->pData);
+        pSec->pData = NULL;
+    }
     clHeapFree(pSec);
 keyFreeNExit:
     clHeapFree(pKey);
