@@ -189,38 +189,38 @@ clAlarmMoPathInstanceGet(char *word, ClInt32T *inst)
       /* go past '.' to get the inst.*/
       if((word[j] == '.'))
        j++;
-       while(1)
-       {
-          if (word[j] && (word[j] != '\\'))
-          {
-              tmp[i] = word[j];
-              i++;
-              j++;
-          }
-          else
-          {
-              ClInt32T k = 0;
-              ClInt32T found = 0;
-              tmp[i] = 0;
-              word[wsize] = 0;
-              for(k=0; k<i; k++)
-              {
-                  if(tmp[k] == ':')
-                  {
-                      found = 1;
-                      break;
-                  }
-              }
-              if(found == 1)
-                  *inst = clAlarmCorAtoI(&tmp[k+1]);
-              else
-              {
-                     CL_DEBUG_PRINT(CL_DEBUG_ERROR,("\n Improper agrument \
-                                 given \n"));
-                     return -1;
-              }
-              return 0;
-          }
+      while(1)
+      {
+         if (word[j] && (word[j] != '\\'))
+         {
+             tmp[i] = word[j];
+             i++;
+             j++;
+         }
+         else
+         {
+             ClInt32T k = 0;
+             ClInt32T found = 0;
+             tmp[i] = 0;
+             word[wsize] = 0;
+             for(k=0; k<i; k++)
+             {
+                 if(tmp[k] == ':')
+                 {
+                     found = 1;
+                     break;
+                 }
+             }
+             if(found == 1)
+                 *inst = clAlarmCorAtoI(&tmp[k+1]);
+             else
+             {
+                    CL_DEBUG_PRINT(CL_DEBUG_ERROR,("\n Improper agrument \
+                                given \n"));
+                    return -1;
+             }
+             return 0;
+         }
       }
                                                                                                                                                              
    }

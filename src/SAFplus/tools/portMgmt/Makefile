@@ -1,6 +1,6 @@
 CC := gcc
 DEBUG_CFLAGS := -DDEBUG
-CFLAGS := -Wall -g  $(DEBUG_CFLAGS) -std=c99 -pedantic -D_GNU_SOURCE
+CFLAGS := -Wall -g  $(DEBUG_CFLAGS) -std=c99 -D_GNU_SOURCE
 SOURCES := port_mgmt.c port_mgmt_main.c
 OBJS :=$(SOURCES:%.c=%.o)
 TARGETS = port_mgmt

@@ -705,12 +705,12 @@ dmClassCompare(CORClass_h this,
         return(CL_COR_SET_RC(CL_COR_ERR_NULL_PTR));
       }
 
-    if(this->classId != cmp->classId ||
-       this->superClassId != cmp->superClassId ||
-       (this->version.releaseCode != cmp->version.releaseCode ||
-        this->version.majorVersion != this->version.majorVersion ||
-        this->version.minorVersion != this->version.minorVersion) ||
-       this->nAttrs != cmp->nAttrs) 
+    if( this->classId              != cmp->classId ||
+        this->superClassId         != cmp->superClassId ||
+       (this->version.releaseCode  != cmp->version.releaseCode ||
+        this->version.majorVersion != cmp->version.majorVersion ||
+        this->version.minorVersion != cmp->version.minorVersion) ||
+        this->nAttrs               != cmp->nAttrs) 
       {
         CL_DEBUG_PRINT(CL_DEBUG_ERROR, ( "ClassCompare (Classes: %04x,%04x)", 
                               this->classId,

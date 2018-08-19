@@ -68,46 +68,46 @@
 ClRcT clCorOmClassNameFromInfoModelGet(ClCorClassTypeT moClass, ClCorServiceIdT svcId, 
                                        ClOmClassTypeT *pOmClass, ClCharT *pClassName, ClUint32T maxClassSize)
 {
-    ClRcT rc;
-    ClBufferHandleT inMessageHandle = 0;
-    ClBufferHandleT outMessageHandle = 0;
-    ClVersionT version;
-    ClNameT className = {0};
-    ClCorUtilExtendedOpT opCode = 0;
+	ClRcT rc;
+	ClBufferHandleT inMessageHandle = 0;
+	ClBufferHandleT outMessageHandle = 0;
+	ClVersionT version;
+	ClNameT className = {0};
+	ClCorUtilExtendedOpT opCode = 0;
 
-    if (!pOmClass || !pClassName || !maxClassSize)
-    {
-        CL_DEBUG_PRINT (CL_DEBUG_ERROR, ( "NULL argument\n"));
-        CL_FUNC_EXIT();
-        return (CL_COR_SET_RC(CL_COR_ERR_NULL_PTR));
-    }
+	if (!pOmClass || !pClassName || !maxClassSize)
+	{
+		CL_DEBUG_PRINT (CL_DEBUG_ERROR, ( "NULL argument\n"));
+		CL_FUNC_EXIT();
+		return (CL_COR_SET_RC(CL_COR_ERR_NULL_PTR));
+	}
 
-    CL_COR_VERSION_SET(version);
+	CL_COR_VERSION_SET(version);
 
-    rc = clBufferCreate(&inMessageHandle);
+	rc = clBufferCreate(&inMessageHandle);
 
-    if(rc != CL_OK)
-   	{
-        CL_DEBUG_PRINT (CL_DEBUG_ERROR, ( "Could not create Input message buffer\n"));
-        return rc;
-   	}
+	if(rc != CL_OK)
+	{
+		CL_DEBUG_PRINT (CL_DEBUG_ERROR, ( "Could not create Input message buffer\n"));
+		return rc;
+	}
 
-    /* Start writing on the input message buffer */
+	/* Start writing on the input message buffer */
 	if((rc = clXdrMarshallClVersionT(&version, inMessageHandle, 0)))
 		goto HandleError;
-    opCode = COR_MO_TO_OM_CLASS_UTIL_OP;
-    if((rc = clXdrMarshallClInt32T(&opCode, inMessageHandle, 0)))
-        goto HandleError;
+	opCode = COR_MO_TO_OM_CLASS_UTIL_OP;
+	if((rc = clXdrMarshallClInt32T(&opCode, inMessageHandle, 0)))
+		goto HandleError;
 	if((clXdrMarshallClInt32T((void *)&moClass, inMessageHandle, 0)) != CL_OK) 
 		goto HandleError;
 	if((VDECL_VER(clXdrMarshallClCorServiceIdT, 4, 0, 0)((void *)&svcId, inMessageHandle, 0)) != CL_OK)
 		goto HandleError;
-	
-    rc = clBufferCreate(&outMessageHandle);
+
+	rc = clBufferCreate(&outMessageHandle);
 	if(rc != CL_OK)
 		goto HandleError;
 
-    COR_CALL_RMD_SYNC_WITH_MSG(COR_UTIL_EXTENDED_OP, inMessageHandle, outMessageHandle, rc);
+	COR_CALL_RMD_SYNC_WITH_MSG(COR_UTIL_EXTENDED_OP, inMessageHandle, outMessageHandle, rc);
 
 	if(rc != CL_OK)
 		goto HandleError;
@@ -116,17 +116,17 @@ ClRcT clCorOmClassNameFromInfoModelGet(ClCorClassTypeT moClass, ClCorServiceIdT 
 
 	if(CL_OK != clXdrUnmarshallClInt32T(outMessageHandle, (ClUint8T*)pOmClass))
 		goto HandleError;
-    
-    if(CL_OK != clXdrUnmarshallClNameT(outMessageHandle, &className))
-        goto HandleError;
 
-    strncpy(pClassName, (const ClCharT*)className.value, CL_MIN(className.length, maxClassSize));
-    pClassName[CL_MIN(className.length, maxClassSize)] = 0;
+	if(CL_OK != clXdrUnmarshallClNameT(outMessageHandle, &className))
+		goto HandleError;
+
+	strncpy(pClassName, (const ClCharT*)className.value, CL_MIN(className.length, maxClassSize));
+	pClassName[CL_MIN(className.length, maxClassSize)] = 0;
 
 HandleError :
 
-    clBufferDelete(&outMessageHandle);
-    clBufferDelete(&inMessageHandle);
+	clBufferDelete(&outMessageHandle);
+	clBufferDelete(&inMessageHandle);
 	return rc;
 }
 

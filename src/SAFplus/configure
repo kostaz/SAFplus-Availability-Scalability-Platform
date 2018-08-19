@@ -718,7 +718,7 @@ done
 build=$build_alias
 host=$host_alias
 target=$target_alias
-export TARGET=${TARGET=$target}
+export TARGET=i686-nptl-linux-gnu
 # FIXME: To remove some day.
 if test "x$host_alias" != x; then
   if test "x$build_alias" = x; then

@@ -233,7 +233,7 @@ ifeq ($(BUILD_PLUS),0)
          ifeq ($(TARGET_VXWORKS), 1)
             TOP_C99FLAGS :=
          else
-            TOP_C99FLAGS      := -std=c99 -pedantic
+            TOP_C99FLAGS      := -std=c99
          endif
  
         endif
@@ -277,8 +277,13 @@ endif
 ifeq ($(BUILD_SHARED), 1)
     CFLAGS		+= -fPIC 
 endif
+
+EXTRA_CFLAGS    += -Wno-error=misleading-indentation
+EXTRA_CPPFLAGS  += -Wno-error=misleading-indentation
+
 CFLAGS		+= $(EXTRA_CFLAGS)
 CPPFLAGS	+= $(EXTRA_CPPFLAGS)
+
 ifndef SOLARIS_BUILD
 ifeq ($(BUILD_SHARED), 1)
 LDFLAGS		+= -Wl,--export-dynamic

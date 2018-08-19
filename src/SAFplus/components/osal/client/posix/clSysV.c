@@ -752,7 +752,7 @@ cosSysvShmSecurityModeSet(ClOsalShmIdT shmId,ClUint32T mode)
      * User Group Others.
      */
 
-    if(mode & (((~(1 << ((sizeof(int) *8)- 1))))<< 9))
+    if(mode & (ClUint32T)(((ClUint64T)((~(1 << ((sizeof(int) *8)- 1)))))<< 9))
     {
         CL_DEBUG_PRINT (CL_DEBUG_TRACE,("\nShared Memory SecurityModeSet: FAILED"));
         retCode = CL_OSAL_RC(CL_OSAL_ERR_SHM_MODE_SET);

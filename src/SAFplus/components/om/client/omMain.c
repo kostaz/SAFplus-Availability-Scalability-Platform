@@ -675,9 +675,9 @@ omClassEntryReload (ClCharT *pClassName, ClOmClassTypeT classId)
     if(clCntNodeFind(ghOmClassHashTbl, (ClCntKeyHandleT)(ClWordT)classId, &nodeHandle) == CL_OK)
         return CL_OK;
 
-	/* Add this class entry into the OM class lookup table */
-	rc = clCntNodeFind(ghOmClassNameHashTbl, (ClCntKeyHandleT)pClassName, &nodeHandle);
-	if (rc != CL_OK)
+    /* Add this class entry into the OM class lookup table */
+    rc = clCntNodeFind(ghOmClassNameHashTbl, (ClCntKeyHandleT)pClassName, &nodeHandle);
+    if (rc != CL_OK)
     {
 		CL_DEBUG_PRINT(CL_DEBUG_ERROR, ("Unable to find OM Class name [%s] entry in om class table",
                                         pClassName));

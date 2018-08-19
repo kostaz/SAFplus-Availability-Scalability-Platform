@@ -1230,41 +1230,41 @@ ClRcT clCorClassAttributeTypeGet(ClCorClassTypeT classId, ClCorAttrIdT attrId, C
  */
 ClRcT clCorNIClassAdd(char *name, ClCorClassTypeT key)
 {
-    ClRcT   rc = CL_OK;
-    if (NULL == name) 
-        return CL_COR_SET_RC(CL_COR_ERR_NULL_PTR);
+	ClRcT   rc = CL_OK;
+	if (NULL == name) 
+		return CL_COR_SET_RC(CL_COR_ERR_NULL_PTR);
 
-        ClIocNodeAddressT   sdAddr = 0;
-        corNiOpInf_t     entry;
-        ClUint32T          size =  sizeof(corNiOpInf_t);
+	ClIocNodeAddressT   sdAddr = 0;
+	corNiOpInf_t     entry;
+	ClUint32T          size =  sizeof(corNiOpInf_t);
 
-        memset(&entry, '\0', size);
+	memset(&entry, '\0', size);
 
-		CL_COR_VERSION_SET(entry.version);
-        entry.classId = key;
-        entry.op = COR_NI_OP_CLASS_NAME_SET;
+	CL_COR_VERSION_SET(entry.version);
+	entry.classId = key;
+	entry.op = COR_NI_OP_CLASS_NAME_SET;
 
-        strcpy(entry.name, name);
-        CL_CPM_MASTER_ADDRESS_GET(&sdAddr );
-	
-        COR_CALL_RMD_WITH_DEST(sdAddr,
-                               COR_EO_NI_OP,
-                               VDECL_VER(clXdrMarshallcorNiOpInf_t, 4, 0, 0),
-                               (ClUint8T *)&entry,
-                               size,
-                               VDECL_VER(clXdrUnmarshallcorNiOpInf_t, 4, 0, 0),
-                               NULL,
-                               NULL,
-                               rc);
+	strcpy(entry.name, name);
+	CL_CPM_MASTER_ADDRESS_GET(&sdAddr );
+
+	COR_CALL_RMD_WITH_DEST(sdAddr,
+			COR_EO_NI_OP,
+			VDECL_VER(clXdrMarshallcorNiOpInf_t, 4, 0, 0),
+			(ClUint8T *)&entry,
+			size,
+			VDECL_VER(clXdrUnmarshallcorNiOpInf_t, 4, 0, 0),
+			NULL,
+			NULL,
+			rc);
 #if 0
-        rc  = !!!OBSOLETErmdCallPayloadReturn!!!(sdAddr, CL_IOC_COR_PORT, COR_EO_NI_CLASS_ADD, 
-                                   (char *)&entry, size, NULL, NULL,  COR_RMD_DFLT_TIME_OUT , 0, 0);
+	rc  = !!!OBSOLETErmdCallPayloadReturn!!!(sdAddr, CL_IOC_COR_PORT, COR_EO_NI_CLASS_ADD, 
+			(char *)&entry, size, NULL, NULL,  COR_RMD_DFLT_TIME_OUT , 0, 0);
 #endif
-        if (rc != CL_OK)
-        {
-            CL_DEBUG_PRINT(CL_DEBUG_ERROR,("\nRMD Failed  [rc x%x]\n ", rc));
-        }
-    return rc;
+	if (rc != CL_OK)
+	{
+		CL_DEBUG_PRINT(CL_DEBUG_ERROR,("\nRMD Failed  [rc x%x]\n ", rc));
+	}
+	return rc;
 }
 
 /*
@@ -1272,40 +1272,40 @@ ClRcT clCorNIClassAdd(char *name, ClCorClassTypeT key)
  */
 ClRcT clCorNIAttrAdd(ClCorClassTypeT  classId, ClCorAttrIdT  attrId, char *name)
 {
-    ClRcT   rc = CL_OK;
-    if (NULL == name) 
-        return CL_COR_SET_RC(CL_COR_ERR_NULL_PTR);
+	ClRcT   rc = CL_OK;
+	if (NULL == name) 
+		return CL_COR_SET_RC(CL_COR_ERR_NULL_PTR);
 
-        ClIocNodeAddressT   sdAddr = 0;
-        corNiOpInf_t        entry;
-        ClUint32T          size =  sizeof(corNiOpInf_t);
+	ClIocNodeAddressT   sdAddr = 0;
+	corNiOpInf_t        entry;
+	ClUint32T          size =  sizeof(corNiOpInf_t);
 
-        memset(&entry, '\0', size);
-		CL_COR_VERSION_SET(entry.version);
-        entry.classId = classId;
-        entry.attrId  = attrId; 
-        entry.op = COR_NI_OP_ATTR_NAME_SET;
-        strcpy(entry.name, name);
-        CL_CPM_MASTER_ADDRESS_GET(&sdAddr );
- 
-        COR_CALL_RMD_WITH_DEST(sdAddr,
-                               COR_EO_NI_OP,
-                               VDECL_VER(clXdrMarshallcorNiOpInf_t, 4, 0, 0),
-                               (ClUint8T *)&entry,
-                               size, 
-                               VDECL_VER(clXdrUnmarshallcorNiOpInf_t, 4, 0, 0),
-                               NULL,
-                               NULL,
-                               rc);
+	memset(&entry, '\0', size);
+	CL_COR_VERSION_SET(entry.version);
+	entry.classId = classId;
+	entry.attrId  = attrId; 
+	entry.op = COR_NI_OP_ATTR_NAME_SET;
+	strcpy(entry.name, name);
+	CL_CPM_MASTER_ADDRESS_GET(&sdAddr );
+
+	COR_CALL_RMD_WITH_DEST(sdAddr,
+			COR_EO_NI_OP,
+			VDECL_VER(clXdrMarshallcorNiOpInf_t, 4, 0, 0),
+			(ClUint8T *)&entry,
+			size, 
+			VDECL_VER(clXdrUnmarshallcorNiOpInf_t, 4, 0, 0),
+			NULL,
+			NULL,
+			rc);
 #if 0
-        rc  = !!!OBSOLETErmdCallPayloadReturn!!!(sdAddr, CL_IOC_COR_PORT, COR_EO_NI_ATTR_ADD, 
-                                   (char *)&entry, size, NULL, NULL,  COR_RMD_DFLT_TIME_OUT , 0, 0);
+	rc  = !!!OBSOLETErmdCallPayloadReturn!!!(sdAddr, CL_IOC_COR_PORT, COR_EO_NI_ATTR_ADD, 
+			(char *)&entry, size, NULL, NULL,  COR_RMD_DFLT_TIME_OUT , 0, 0);
 #endif
-        if (rc != CL_OK)
-        {
-            CL_DEBUG_PRINT(CL_DEBUG_ERROR,("\nRMD Failed  [rc x%x]\n ", rc));
-        }
-    return rc;
+	if (rc != CL_OK)
+	{
+		CL_DEBUG_PRINT(CL_DEBUG_ERROR,("\nRMD Failed  [rc x%x]\n ", rc));
+	}
+	return rc;
 }
 
 /*
@@ -1474,41 +1474,41 @@ ClRcT clCorNIClassNameGet(ClCorClassTypeT key, char *name )
  */
 ClRcT clCorNIAttrIdGet(ClCorClassTypeT classId, char *name,  ClCorAttrIdT  *attrId)
 {
-    ClRcT   rc = CL_OK;
-    if (NULL == name) 
-        return CL_COR_SET_RC(CL_COR_ERR_NULL_PTR);
+	ClRcT   rc = CL_OK;
+	if (NULL == name) 
+		return CL_COR_SET_RC(CL_COR_ERR_NULL_PTR);
 
-        ClIocNodeAddressT   sdAddr = 0;
-        corNiOpInf_t        entry;
-        ClUint32T          size =  sizeof(ClCorAttrIdT);
+	ClIocNodeAddressT   sdAddr = 0;
+	corNiOpInf_t        entry;
+	ClUint32T          size =  sizeof(ClCorAttrIdT);
 
-        memset(&entry, '\0', sizeof(corNiOpInf_t));
-		CL_COR_VERSION_SET(entry.version);
-        entry.classId = classId;
-        entry.op = COR_NI_OP_ATTR_ID_GET;
-        strcpy(entry.name, name);
+	memset(&entry, '\0', sizeof(corNiOpInf_t));
+	CL_COR_VERSION_SET(entry.version);
+	entry.classId = classId;
+	entry.op = COR_NI_OP_ATTR_ID_GET;
+	strcpy(entry.name, name);
 
-        CL_CPM_MASTER_ADDRESS_GET(&sdAddr );
+	CL_CPM_MASTER_ADDRESS_GET(&sdAddr );
 
-        COR_CALL_RMD_WITH_DEST(sdAddr,
-                               COR_EO_NI_OP,
-                               VDECL_VER(clXdrMarshallcorNiOpInf_t, 4, 0, 0),
-                               (ClUint8T *)&entry,
-                               sizeof(corNiOpInf_t),
-                               VDECL_VER(clXdrUnmarshallcorNiOpInf_t, 4, 0, 0),
-                               (ClUint8T *)&entry,
-                               &size,
-                               rc);
+	COR_CALL_RMD_WITH_DEST(sdAddr,
+			COR_EO_NI_OP,
+			VDECL_VER(clXdrMarshallcorNiOpInf_t, 4, 0, 0),
+			(ClUint8T *)&entry,
+			sizeof(corNiOpInf_t),
+			VDECL_VER(clXdrUnmarshallcorNiOpInf_t, 4, 0, 0),
+			(ClUint8T *)&entry,
+			&size,
+			rc);
 #if 0
-        rc  = !!!OBSOLETErmdCallPayloadReturn!!!(sdAddr, CL_IOC_COR_PORT, COR_EO_NI_ATTR_NAME_GET, 
-                                   (char *)&entry, sizeof(corNiOpInf_t), (char *)&entry.attrId, &size,  COR_RMD_DFLT_TIME_OUT , 0, 0);
+	rc  = !!!OBSOLETErmdCallPayloadReturn!!!(sdAddr, CL_IOC_COR_PORT, COR_EO_NI_ATTR_NAME_GET, 
+			(char *)&entry, sizeof(corNiOpInf_t), (char *)&entry.attrId, &size,  COR_RMD_DFLT_TIME_OUT , 0, 0);
 #endif
-        if (rc != CL_OK)
-        {
-            CL_DEBUG_PRINT(CL_DEBUG_TRACE,("\nRMD Failed  [rc x%x]\n ", rc));
-        }
-        *attrId = entry.attrId;
-    return rc;
+	if (rc != CL_OK)
+	{
+		CL_DEBUG_PRINT(CL_DEBUG_TRACE,("\nRMD Failed  [rc x%x]\n ", rc));
+	}
+	*attrId = entry.attrId;
+	return rc;
 }
 
 

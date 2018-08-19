@@ -67,39 +67,39 @@ ClRcT clCorMoIdToNodeNameGet(ClCorMOIdPtrT pMoId, ClNameT* nodeName)
 ClRcT clCorNodeNameToMoIdGet(ClNameT nodeName, 
                              ClCorMOIdPtrT  pMoId)
 {
-    ClRcT rc;
-    corClientMoIdToNodeNameT tab= {{0}};
+	ClRcT rc;
+	corClientMoIdToNodeNameT tab= {{0}};
 	ClUint32T size;
 
 	CL_COR_VERSION_SET(tab.version);
-    /*
-     * In anticipation of calls from AMS context.
-     */
-    if(nodeName.length > strlen(nodeName.value))
-        nodeName.length = strlen(nodeName.value);
+	/*
+	 * In anticipation of calls from AMS context.
+	 */
+	if(nodeName.length > strlen(nodeName.value))
+		nodeName.length = strlen(nodeName.value);
 	tab.nodeName = nodeName;
 	tab.op = COR_NODE_NAME_TO_MOID_GET;
 
 	size = sizeof(corClientMoIdToNodeNameT);
-	
+
 	COR_CALL_RMD_WITHOUT_ATMOST_ONCE(COR_MOID_TO_NODE_NAME_TABLE_OP,
-                                     VDECL_VER(clXdrMarshallcorClientMoIdToNodeNameT, 4, 0, 0),
-                                     &tab, 
-                                     sizeof(corClientMoIdToNodeNameT ),
-                                     VDECL_VER(clXdrUnmarshallcorClientMoIdToNodeNameT, 4, 0, 0),
-                                     &tab,
-                                     &size,
-                                     rc);
+			VDECL_VER(clXdrMarshallcorClientMoIdToNodeNameT, 4, 0, 0),
+			&tab, 
+			sizeof(corClientMoIdToNodeNameT ),
+			VDECL_VER(clXdrUnmarshallcorClientMoIdToNodeNameT, 4, 0, 0),
+			&tab,
+			&size,
+			rc);
 
 	if(CL_OK != rc)
-    {
+	{
 		CL_COR_RETURN_ERROR(CL_DEBUG_ERROR, "\nFailed to get moId from the server\n", rc);
-    }
-    else
-    {
-        /* Got the moId successfully. Pass it back */
-        *pMoId= tab.moId;
-    }
+	}
+	else
+	{
+		/* Got the moId successfully. Pass it back */
+		*pMoId= tab.moId;
+	}
 
 	return rc;
 }
