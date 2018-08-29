@@ -66,7 +66,7 @@ ifeq (${OPENAIS_BUILD}, DEBUG)
 	CFLAGS += -O0 -g -Wall -DDEBUG
 	LDFLAGS += -g
 	ifeq (${OPENAIS_COMPAT}, SOLARIS)
-		CFLAGS += -Werror -DTS_CLASS
+		CFLAGS += -DTS_CLASS
 	endif
 endif
 ifeq (${OPENAIS_BUILD}, COVERAGE)
