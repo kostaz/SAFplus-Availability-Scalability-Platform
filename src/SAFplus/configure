@@ -1574,7 +1574,6 @@ export BUILD_TIPC=1
 export ASP_BUILD=0
 export MODEL_BUILD=1
 export PROJECT_ONLY=0
-export TIPC_INC_DIR=include
 export ASP_SIMULATION=0
 export DEFAULT_SUBNET=169.254.100.0/24
 export DEFAULT_UDP_LINKNAME=eth0:10        
@@ -7407,35 +7406,6 @@ if [ $MODEL_BUILD = 1 -a $ASP_BUILD = 0 ]; then
         exit 1
     fi
 fi
-
-# AA
-# Set TIPC_INC_DIR variable
-if [ $BUILD_TIPC = 1 ]; then
-	if [ $HOST_OS == "SunOS" ]; then
-		TIPC_INCLUDE=/opt/SUNWtipc/include/solaris
-	else
-        if [ $TARGET_QNX = 1 ]; then
-            TIPC_INCLUDE=/opt/clovis/buildtools/$CROSS_BUILD/include
-        else
-	        if [ $KERNEL_PATCH_VERSION -lt 15 ]; then
-            	TIPC_INC_DIR=include/net/tipc
-	        else
-            	TIPC_INC_DIR=include
-	        fi
-
-	        if [ $CROSS_FLAG = 0 ]; then
-            	if [ -f $TOOLCHAIN_DIR/modules/tipc.ko ]; then
-            	    TIPC_INCLUDE=$TOOLCHAIN_DIR/include
-            	else
-            	    TIPC_INCLUDE=$KERNEL_SOURCE/$TIPC_INC_DIR
-            	fi
-	        fi
-        fi
-	fi
-fi
-
-export TIPC_INC_DIR= # Kosta
-TIPC_INCLUDE=$KERNEL_SOURCE/$TIPC_INC_DIR
 
 #Checking for presence of gdbm
 
