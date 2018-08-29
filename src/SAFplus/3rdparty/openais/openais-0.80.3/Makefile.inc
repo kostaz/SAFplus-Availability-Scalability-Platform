@@ -148,5 +148,4 @@ endif
 #IF it is TIPC build, set following values
 ifeq (${OPENAIS_TIPC}, 1)
     override CFLAGS += -DOPENAIS_TIPC
-    override CFLAGS += $(TIPC_CFLAGS)
 endif
