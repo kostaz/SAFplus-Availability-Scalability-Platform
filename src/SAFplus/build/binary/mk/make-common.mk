@@ -163,7 +163,7 @@ endif
 ################################################################################
 ARFLAGS		= -r
 TOP_LDFLAGS     = -g -lpthread
-TOP_CFLAGS      = -c -Wall -Werror -D_GNU_SOURCE
+TOP_CFLAGS      = -c -Wall -D_GNU_SOURCE
 SHARED_LDFLAGS  = -shared -fPIC
 ifeq ($(BUILD_PLUS),0)
 TOP_CFLAGS      += -std=c99 -pedantic

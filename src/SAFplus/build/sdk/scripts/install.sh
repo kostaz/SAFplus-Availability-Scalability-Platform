@@ -29,7 +29,7 @@
 
 
 ASP_VERSION=2.3
-CONF=/etc/asp-sdk-$ASP_VERSION.conf
+CONF=$PREFIX/etc/asp-sdk-$ASP_VERSION.conf
 
 USER=`whoami`
 if [ $USER != "root" ]
@@ -46,7 +46,6 @@ SDK_CW=$SDK_PREFIX/cw
 SDK_INCLUDE=$SDK_ASP/include
 SDK_LIB=$SDK_ASP/$CL_TARGET_PLATFORM/$CL_TARGET_OS/lib
 SDK_BIN=$SDK_ASP/$CL_TARGET_PLATFORM/$CL_TARGET_OS/bin
-SDK_MOD=$SDK_ASP/$CL_TARGET_PLATFORM/$CL_TARGET_OS/kmod
 SDK_TEMPLATES=$SDK_ASP/templates
 SDK_SAMPLES=$SDK_ASP/samples
 SDK_TEST=$SDK_ASP/test
@@ -72,12 +71,10 @@ if [ ! -f $CONF ]; then
     echo "Creating $SDK_RT: `mkdir -p $SDK_RT` Done"
     echo "Creating $SDK_LIB: `mkdir -p $SDK_LIB` Done"
     echo "Creating $SDK_BIN: `mkdir -p $SDK_BIN` Done"
-    echo "Creating $SDK_MOD: `mkdir -p $SDK_MOD` Done"
     echo "Creating $SDK_TEMPLATES: `mkdir -p $SDK_TEMPLATES` Done"
     echo "Creating $SDK_SAMPLES: `mkdir -p $SDK_SAMPLES` Done"
     echo "Creating $SDK_TEST: `mkdir -p $SDK_TEST` Done"
     echo "Creating $SDK_MAKE: `mkdir -p $SDK_MAKE` Done"
-    echo "Creating $SDK_DOC: `mkdir -p $SDK_DOC` Done"
     echo "Creating $SDK_CW_TEMPLATES: `mkdir -p $SDK_CW_TEMPLATES` Done"
     echo "Creating $SDK_CW_SAMPLES: `mkdir -p $SDK_CW_SAMPLES` Done"
 
@@ -98,7 +95,6 @@ if [ ! -f $CONF ]; then
     cp -pr $CLOVIS_ROOT/ASP/components/cor/common/clCorTxnJobStream.h $SDK_INCLUDE 
     cp -pr $CLOVIS_ROOT/ASP/3rdparty/ezxml/stable/ezxml.h $SDK_INCLUDE
     cp -pr $CLOVIS_ROOT/ASP/components/amf/common/ams/parser/clAmsParser.h $SDK_INCLUDE
-    cp -pr $CLOVIS_ROOT/ASP/components/amf/common/ams/clAmsSAClientApi.h $SDK_INCLUDE
     echo "Done"
 
     #######################
@@ -113,14 +109,6 @@ if [ ! -f $CONF ]; then
     mv $SDK_MAKE/make-common.mk.bak $SDK_MAKE/make-common.mk
     echo "Done"
 
-    ###########################
-    ## Copying Documentation ##
-    ###########################
-    
-    echo -n "Copying docs : "
-    cp -pr $CLOVIS_ROOT/ASP/doc/* $SDK_DOC
-    echo "Done"
-
     #####################################
     ## Copying packaging related files ##
     #####################################
@@ -129,11 +117,8 @@ if [ ! -f $CONF ]; then
     mkdir -p $SDK_RT/scripts
     mkdir -p $SDK_RT/conf
     cp -f $CLOVIS_ROOT/ASP/build/common/scripts/package.sh $SDK_RT/scripts/
-    cp -f $CLOVIS_ROOT/ASP/scripts/clIocLoadModule.sh $SDK_RT/scripts/
-    cp -f $CLOVIS_ROOT/ASP/scripts/clIocUnloadModule.sh $SDK_RT/scripts/
     cp -f $CLOVIS_ROOT/ASP/build/rt/scripts/install.sh $SDK_RT/scripts/
     cp -f $CLOVIS_ROOT/ASP/build/rt/scripts/uninstall.sh $SDK_RT/scripts/
-    cp -f $CLOVIS_ROOT/ASP/build/rt/scripts/asp $SDK_RT/scripts/
     cp -f $CLOVIS_ROOT/ASP/build/rt/README $SDK_RT
     cp -f $CLOVIS_ROOT/ASP/build/rt/conf/* $SDK_RT/conf/
     echo "Done"
@@ -145,7 +130,6 @@ if [ ! -f $CONF ]; then
     echo -n "Copying scripts : "
     cp -rf $CLOVIS_ROOT/ASP/build/common/scripts/asp-sdk-config $PREFIX/clovis
     chmod +x $PREFIX/clovis/asp-sdk-config
-    ln -sf $PREFIX/clovis/asp-sdk-config /usr/bin/asp-sdk-config
 
     cp -rf $CLOVIS_ROOT/ASP/build/common/scripts/uninstall.sh $PREFIX/clovis
     chmod +x $PREFIX/clovis/uninstall.sh
@@ -168,7 +152,6 @@ else
     PREFIX=$OLDPREFIX
     echo "Creating $SDK_LIB: `mkdir -p $SDK_LIB` Done"
     echo "Creating $SDK_BIN: `mkdir -p $SDK_BIN` Done"
-    echo "Creating $SDK_MOD: `mkdir -p $SDK_MOD` Done"
 fi
    
 #######################
@@ -177,9 +160,6 @@ fi
 
 echo -n "Copying libraries : "
 cp -pr $ASP_LIB/* $SDK_LIB
-cp $CLOVIS_ROOT/ASP/3rdparty/ezxml/stable/libezxml.a $SDK_LIB
-cp $CLOVIS_ROOT/ASP/3rdparty/openais/stable/exec/libtotem_pg.a $SDK_LIB
-cp $CLOVIS_ROOT/ASP/3rdparty/openais/stable/exec/libaisexec.a $SDK_LIB
 echo "Done"
 
 ######################
@@ -195,15 +175,4 @@ echo "Done"
 ############################
 
 echo -n "Copying kernel modules : "
-cp -pr $ASP_KMOD/* $SDK_MOD
 echo "Done"
-
-##################################
-## Generating asp-sdk-2.3.conf ##
-##################################
-
-## save the env variables
-echo -n "Generating /etc/asp-sdk-$ASP_VERSION.conf : "
-echo "export PREFIX=$PREFIX" > $CONF
-echo "Done"
-

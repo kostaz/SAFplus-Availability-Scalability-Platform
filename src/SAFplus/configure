@@ -1555,13 +1555,13 @@ export CLOVIS_ROOT=`pwd`
 cd - > /dev/null
 ## cd -
 
-export CL_TARGET_PLATFORM=`uname -m`
+export CL_TARGET_PLATFORM=i586
 export BUILD_TOOLS_DIR=$CL_BUILDTOOLS
 export CROSS_FLAG=0
 export CROSS_BUILD=0
 export KERNEL_FLAG=0
 export KERNEL=linux
-export KERNEL_SOURCE=/lib/modules/`uname -r`/build
+export KERNEL_SOURCE=/usr/include/linux
 export SNMP_BUILD=1
 export CM_BUILD=0
 export ASP_MODEL_NAME=eval
@@ -1574,7 +1574,6 @@ export BUILD_TIPC=1
 export ASP_BUILD=0
 export MODEL_BUILD=1
 export PROJECT_ONLY=0
-export TIPC_INC_DIR=include
 export ASP_SIMULATION=0
 export DEFAULT_SUBNET=169.254.100.0/24
 export DEFAULT_UDP_LINKNAME=eth0:10        
@@ -7392,6 +7391,9 @@ else
 	export CL_TARGET_OS=linux-$KERNEL_MAJOR_VERSION.$KERNEL_MINOR_VERSION.$KERNEL_PATCH_VERSION
     fi
 fi
+
+export CL_TARGET_OS=linux # Kosta
+
 # AA
 # If we are doing a model-only build, ensure that we have ASP libraries in
 # the specified ASP_INSTALLDIR
@@ -7403,32 +7405,6 @@ if [ $MODEL_BUILD = 1 -a $ASP_BUILD = 0 ]; then
         echo "--with-safplus-build flag and retry this script."
         exit 1
     fi
-fi
-
-# AA
-# Set TIPC_INC_DIR variable
-if [ $BUILD_TIPC = 1 ]; then
-	if [ $HOST_OS == "SunOS" ]; then
-		TIPC_INCLUDE=/opt/SUNWtipc/include/solaris
-	else
-        if [ $TARGET_QNX = 1 ]; then
-            TIPC_INCLUDE=/opt/clovis/buildtools/$CROSS_BUILD/include
-        else
-	        if [ $KERNEL_PATCH_VERSION -lt 15 ]; then
-            	TIPC_INC_DIR=include/net/tipc
-	        else
-            	TIPC_INC_DIR=include
-	        fi
-
-	        if [ $CROSS_FLAG = 0 ]; then
-            	if [ -f $TOOLCHAIN_DIR/modules/tipc.ko ]; then
-            	    TIPC_INCLUDE=$TOOLCHAIN_DIR/include
-            	else
-            	    TIPC_INCLUDE=$KERNEL_SOURCE/$TIPC_INC_DIR
-            	fi
-	        fi
-        fi
-	fi
 fi
 
 #Checking for presence of gdbm

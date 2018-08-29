@@ -167,7 +167,7 @@ export TIPC_INCLUDE   = /opt/SUNWtipc/include/solaris
 CFLAGS += -I/opt/SUNWtipc/include/solaris
 CFLAGS += -I$(CLOVIS_ROOT)/ASP/3rdparty/Solaris/openhpi/include
 else
-export TIPC_INCLUDE   ?= /lib/modules/$(shell uname -r)/build/$(TIPC_INC_DIR)
+export TIPC_INCLUDE
 endif
 
 export TIPC_CFLAGS = -I$(TIPC_INCLUDE)
