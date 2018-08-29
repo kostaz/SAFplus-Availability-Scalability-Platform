@@ -15,6 +15,8 @@
 # For more  information,  see the  file COPYING provided with this
 # material.
 
+exit 0
+
 #
 # if CROSS_BUILD is empty, set it to 'local'
 if [ ! $CROSS_BUILD ]; then
