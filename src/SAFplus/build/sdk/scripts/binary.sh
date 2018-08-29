@@ -160,9 +160,6 @@ cp -p $CLOVIS_ROOT/ASP/components/include/ipi/clSAClientSelect.h $INCLUDE_DIR/ip
 cp -p $CLOVIS_ROOT/ASP/components/cor/common/clCorTxnJobStream.h $INCLUDE_DIR
 cp -p $CLOVIS_ROOT/ASP/components/cor/common/clCorTxnClientIpi.h $INCLUDE_DIR
 cp -p $CLOVIS_ROOT/ASP/components/amf/common/ams/parser/clAmsParser.h $INCLUDE_DIR
-cp -p $CLOVIS_ROOT/ASP/components/amf/common/ams/clAmsSAClientApi.h $INCLUDE_DIR
-cp -p $CLOVIS_ROOT/ASP/components/amf/common/ams/clAmsSAClientApi.h $INCLUDE_DIR
-cp -p $CLOVIS_ROOT/ASP/components/amf/common/ams/clAmsMgmtCommon.h $INCLUDE_DIR
 
 echo "Done"
 
