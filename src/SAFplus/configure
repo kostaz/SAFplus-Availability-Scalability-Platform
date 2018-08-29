@@ -1555,13 +1555,13 @@ export CLOVIS_ROOT=`pwd`
 cd - > /dev/null
 ## cd -
 
-export CL_TARGET_PLATFORM=`uname -m`
+export CL_TARGET_PLATFORM=i586
 export BUILD_TOOLS_DIR=$CL_BUILDTOOLS
 export CROSS_FLAG=0
 export CROSS_BUILD=0
 export KERNEL_FLAG=0
 export KERNEL=linux
-export KERNEL_SOURCE=/lib/modules/`uname -r`/build
+export KERNEL_SOURCE=/usr/include/linux
 export SNMP_BUILD=1
 export CM_BUILD=0
 export ASP_MODEL_NAME=eval
@@ -7392,6 +7392,9 @@ else
 	export CL_TARGET_OS=linux-$KERNEL_MAJOR_VERSION.$KERNEL_MINOR_VERSION.$KERNEL_PATCH_VERSION
     fi
 fi
+
+export CL_TARGET_OS=linux # Kosta
+
 # AA
 # If we are doing a model-only build, ensure that we have ASP libraries in
 # the specified ASP_INSTALLDIR
@@ -7430,6 +7433,9 @@ if [ $BUILD_TIPC = 1 ]; then
         fi
 	fi
 fi
+
+export TIPC_INC_DIR= # Kosta
+TIPC_INCLUDE=$KERNEL_SOURCE/$TIPC_INC_DIR
 
 #Checking for presence of gdbm
 
